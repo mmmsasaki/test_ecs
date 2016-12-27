@@ -1,0 +1,13 @@
+app:
+  build: ./testapp
+  command: './server'
+  volumes:
+    - ./testapp:/app
+
+nginx:
+  build: ./nginx
+  links:
+    - app
+  command: nginx -g "daemon off;"
+  ports:
+    - "80:80"
