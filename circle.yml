@@ -1,0 +1,30 @@
+machine:
+  python:
+    version: 2.7.3
+  services:
+    - docker
+
+dependencies:
+  pre:
+    - pip install awscli jq
+    - docker build --rm=false -t mmmsasaki/test_app:$CIRCLE_SHA1 ./testapp
+
+  cache_directories:
+    - "~/docker"
+
+  override:
+    - if [[ -e ~/docker/image.tar ]]; then docker load -i ~/docker/image.tar; fi
+    - docker build --rm=false -t mmmsasaki/test_app ./testapp
+    - mkdir -p ~/docker; docker save mmmsasaki/test_app > ~/docker/image.tar
+
+test:
+  post:
+    - docker run -d -p 8080:8080 mmmsasaki/test_app:$CIRCLE_SHA1; sleep 10
+    - curl --retry 10 --retry-delay 5 -v http://localhost:8080/apple
+
+deployment:
+  staging:
+    branch: master
+    commands:
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+      - ./deploy.sh $CIRCLE_SHA1
