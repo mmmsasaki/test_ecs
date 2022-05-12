@@ -1,4 +1,4 @@
-FROM nginx
+FROM nginx:1.21
 
 ADD nginx.conf /etc/nginx/nginx.conf
 ADD site.conf /etc/nginx/sites-enabled/
