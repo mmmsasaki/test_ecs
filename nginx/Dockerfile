@@ -1,4 +1,4 @@
-FROM nginx
+FROM nginx:stable
 
 ADD nginx.conf /etc/nginx/nginx.conf
 ADD site.conf /etc/nginx/sites-enabled/
